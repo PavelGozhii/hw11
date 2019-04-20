@@ -1,37 +1,34 @@
 package com.company;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class Main {
 
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
-        String[] answer = newGetMostInputWordsN(in.nextLine());
-        Arrays.stream(answer).forEachOrdered(System.out::println);
+        newGetMostInputWordsN(in.nextLine());
     }
 
 
-    public static String[] newGetMostInputWordsN(String inputString) {
-        List<String> answer = Stream.of(inputString.toLowerCase().split("(?:[!,.?^_]|-)"))
-                .flatMap(n -> Arrays.asList(n.split(" ")).stream())
-                .collect(Collectors.toList()).stream()
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-                .entrySet().stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .collect(
-                        Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (n1, n2) -> {
-                                    throw new IllegalStateException();
-                                },
-                                LinkedHashMap::new)).keySet().stream().limit(10)
-                .collect(Collectors.toList());
-
-        String[] strings = new String[10];
-        IntStream.range(0, answer.size()).forEach(i -> strings[i] = answer.get(i));
-        return strings;
+    public static void newGetMostInputWordsN(String inputString) {
+        Arrays.stream(inputString
+                .toLowerCase()
+                .replaceAll("(?:[!,.?^_]|-)", " ")
+                .split(" "))
+                .collect(Collectors
+                        .groupingBy(Function.identity(), Collectors.counting()))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue(Comparator.reverseOrder())
+                        .thenComparing(Map.Entry.comparingByKey()))
+                .limit(11)
+                .map(Map.Entry::getKey)
+                .forEachOrdered(System.out::println);
     }
 
 }
